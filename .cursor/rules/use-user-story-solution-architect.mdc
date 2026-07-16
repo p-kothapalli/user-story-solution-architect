@@ -1,0 +1,37 @@
+---
+description: Always author user stories with the User Story Solution Architect skill
+alwaysApply: true
+---
+
+# Always use the User Story Solution Architect for user stories
+
+Whenever the user asks to **create, write, draft, plan, refactor, or break down** a
+user story, requirement, build spec, technical specification, or epic, you MUST
+first read and follow the skill at
+`.cursor/skills/user-story-architect/SKILL.md` (the "User Story Solution
+Architect"), and author the output using its contract.
+
+## Triggers (non-exhaustive)
+
+- "create/write/draft a user story", "story for …", "US-…", "acceptance criteria"
+- "break down this into stories", "epic", "decompose the spec"
+- "refactor story", "bug fix story", "build spec", "implementation plan"
+
+## Non-negotiables from the skill (hard blockers)
+
+- **Concrete business persona** — never "user"/"business user"/"developer". Use the
+  workspace role (e.g., Credentialing Specialist, PDM Specialist, Provider Data
+  Admin (PDA) Specialist, Network Management QC Specialist, Ancillary Cred Specialist).
+- **Given / When / Then in business language** (Pattern A) for behavioural ACs — no
+  Apex class names, IP versions/step numbers, SOQL, or API field names inside the AC.
+- **`## Technical Implementation (high-level)`** section after the ACs (all
+  implementation detail lives here, not in the ACs).
+- **Never hallucinate component names** — verify OmniScripts/DataRaptors/IPs/Apex
+  against the codebase first, and scan `requirements/` for overlapping stories.
+- Include the required sections in canonical order and an **Estimated Effort** table.
+
+## If the MCP is available
+
+If the `project-0-IBXQA-user-story-architect` MCP server is connected, you may use
+it. If it is unavailable, fall back to the skill file above — do not skip the
+Architect contract.

@@ -35,7 +35,7 @@ follow-up meeting.
 This file is a navigational overview. Detailed contracts and templates live in
 one-level-deep reference files (loaded only when needed):
 
-- **AC + persona contract:** `references/ac-pattern-library.md`
+- **AC + persona contract (Patterns A–E):** `references/ac-pattern-library.md`
 - **Story output template + effort sizing + save location:** `references/output-template.md`
 - **Post-generation offers (STEP 6):** `references/post-generation-offers.md`
 - **Component / object / naming references:** `references/omnistudio-components.md`, `references/pnm-object-model.md`
@@ -96,10 +96,11 @@ Story Progress:
 12. **ALWAYS use the workspace's concrete business-role persona.** Never "business user", "user", or "system". For PNM Ancillary work the persona is **Ancillary Cred Specialist** unless the user names another role. Full cheatsheet in `references/ac-pattern-library.md`.
 13. **ACs are written in BUSINESS LANGUAGE.** Apex class names, IP version/step numbers, SOQL, picklist API values, custom-field API names, and `Limits.*` checks do NOT belong inside Given/When/Then — they move to the Technical Implementation section. Exception: Patterns B and C (field/perm-set specs) use bullets.
 14. **EVERY story has a `## Technical Implementation (high-level)` section after the ACs** — a concise table naming components, change type, and a one-line note. Not a re-spec of the ACs. Deep design notes link to `requirements/Enhancements/`.
+15. **ALWAYS spec every created/updated record with Pattern E** — whenever a story's outcome is "records are created or updated" (a submit, Done, batch run, or trigger write), include a Pattern E *Record & Field Specification* block that enumerates **every object and every field with its exact value/formula** (screenshot-style, parents before children). A business-language Pattern A AC alone is not enough; pair it with Pattern E so the developer can build the write and QA can assert every field. Never abbreviate the field list with "etc."
 
-The persona contract, the four AC patterns (A behavioural, B field/metadata,
-C permission-set, D update-rules), and worked examples are all in
-`references/ac-pattern-library.md`. Read it before writing ACs.
+The persona contract, the five AC patterns (A behavioural, B field/metadata,
+C permission-set, D update-rules, E record & field specification), and worked
+examples are all in `references/ac-pattern-library.md`. Read it before writing ACs.
 
 ---
 
@@ -245,7 +246,10 @@ names.
 
 Produce the story using the exact format, canonical section order, effort sizing,
 and save-location rules in **`references/output-template.md`**. Choose AC patterns
-per **`references/ac-pattern-library.md`**. Match the depth of the worked
+per **`references/ac-pattern-library.md`** (A behavioural, B field/metadata,
+C perm-set, D update-rules, E record & field specification). Whenever an AC's
+outcome is "records are created/updated," pair it with a **Pattern E** per-object
+field spec that enumerates every field (RULE 15). Match the depth of the worked
 exemplars in **`references/story-examples.md`**.
 
 Section order (detail in the template): Header -> Story -> Why it matters ->
@@ -262,7 +266,7 @@ After generating, check — and fix before presenting:
 
 1. **Completeness:** all required sections present (Header, Story, Why it matters, Acceptance Criteria, Technical Implementation, Definition of done, Estimated Effort)?
 2. **Persona contract:** concrete business role (no "business user"/"user"/"system")? Same role in "As a / I want / So that"?
-3. **AC format contract:** every AC uses Pattern A/B/C/D? Pattern A = three explicit lines, single When, no prose?
+3. **AC format contract:** every AC uses Pattern A/B/C/D/E? Pattern A = three explicit lines, single When, no prose? **Every "records are created/updated" outcome carries a Pattern E per-object field spec (every field enumerated, no "etc.")?**
 4. **Business-language contract:** no Apex class names, IP versions/step numbers, custom-field API names, SOQL, picklist API values, or `Limits.*` inside any Pattern-A Given/When/Then/And?
 5. **Technical Implementation contract:** present after the AC block, concise, cross-references the AC numbers it implements?
 6. **Accuracy:** do referenced components actually exist (verified via `code-review-graph`)?
@@ -311,6 +315,8 @@ connected (verify first; a server may need auth):
 - Naming an OmniScript, DataRaptor, IP, or Apex class you haven't confirmed via `code-review-graph` → STOP, verify before it lands in the story.
 - Reaching for Grep / Read before trying `code-review-graph:semantic_search_nodes` → STOP, graph first.
 - An acceptance criterion is written as a prose paragraph instead of three GWT lines → STOP, reformat to Pattern A.
+- An AC says "records are created/updated" but no Pattern E field-spec block enumerates the objects and fields → STOP, add the per-object field tables (RULE 15).
+- A Pattern E record spec abbreviates the field list with "etc." / "and other fields" → STOP, enumerate every field that is written.
 - About to present a story missing the Technical Implementation section, Definition of done, or Estimated Effort → STOP, it's incomplete.
 
 ---
@@ -319,7 +325,7 @@ connected (verify first; a server may need auth):
 
 ### Local references (this skill)
 
-- `references/ac-pattern-library.md` — Persona contract + AC Patterns A–D (read before writing ACs)
+- `references/ac-pattern-library.md` — Persona contract + AC Patterns A–E (read before writing ACs)
 - `references/output-template.md` — Full story template, effort sizing, save location
 - `references/post-generation-offers.md` — STEP 6 MCP integration detail
 - `references/omnistudio-components.md` — OmniStudio component & naming reference
@@ -375,6 +381,7 @@ Prefer the `salesforce-docs` MCP when connected; otherwise use these:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| **v1.11** | 2026-07-23 | Added **Pattern E — Record & Field Specification** (screenshot-style per-object field recipe) to the AC library, and made it mandatory (new RULE 15) whenever a story's outcome is "records are created/updated": every object + every field enumerated with exact values/formulas, paired with the business-language Pattern A AC. Wired Pattern E through STEP 4, the STEP 5 validator, Red Flags, and reference lists. |
 | **v1.10** | 2026-07-12 | `build-skill`-standard polish to 13/13 portable rules: added inline WHY rationale to the bare `ALWAYS/NEVER` CRITICAL RULES (1, 2, 4–10); added a `## When to Use` section with an explicit "When NOT to use" list (near-miss / negative triggers). |
 | **v1.9** | 2026-07-12 | `build-skill`-standard audit fixes: added `effort: high` frontmatter; reordered `description` to lead with "Use when…" (triggers-first, CSO); added `## Common Mistakes` and `## Red Flags — STOP` sections seeded from the skill's hard-blocker rules (persona, business-language ACs, GWT format, component verification, graph-first). |
 | **v1.8** | 2026-07-12 | Best-practices audit fixes: added `name` frontmatter field; split SKILL.md (was 853 lines) into a navigational overview under ~400 lines by extracting `references/ac-pattern-library.md`, `references/output-template.md`, and `references/post-generation-offers.md`; added a copy-able progress checklist; fully qualified MCP tool names as `server:tool`; added a table of contents to every reference file >100 lines; added an `evaluations/` set (>=3 scenarios + rubrics). |

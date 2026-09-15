@@ -22,7 +22,7 @@ present; _optional_ sections appear only when relevant.
 3. Why it matters — **required**
 4. Scope table (Flow, OmniScript, Affected Step, Data Source) — _optional_
 5. Current State (from codebase) — _optional_
-6. **Acceptance Criteria** (using Patterns A–D — see `references/ac-pattern-library.md`) — **required**
+6. **Acceptance Criteria** (using Patterns A–E — see `references/ac-pattern-library.md`; every "records created/updated" outcome carries a Pattern E per-object field spec) — **required**
 7. **Technical Implementation (high-level)** — **required**
 8. Definition of done (checkbox list) — **required**
 9. Clarification Questions table — **required when ambiguity exists**
@@ -79,10 +79,13 @@ Use this EXACT format. Every section is REQUIRED unless marked optional.
 
 ## Acceptance Criteria
 
-> Every AC uses one of the four patterns from references/ac-pattern-library.md:
+> Every AC uses one of the five patterns from references/ac-pattern-library.md:
 > A (behavioural GWT, business language), B (field/object/metadata bullets),
-> C (permission set / FLS bullets), D (field update rules). No Apex class names,
-> IP versions/step numbers, SOQL, or API field names inside Pattern-A ACs.
+> C (permission set / FLS bullets), D (field update rules), E (record & field
+> specification — per-object field recipe for created/updated records). No Apex
+> class names, IP versions/step numbers, SOQL, or API field names inside
+> Pattern-A ACs. Any "records are created/updated" outcome MUST include a
+> Pattern E block enumerating every object and every field.
 
 **AC-1 — [Short title in business language]**
 

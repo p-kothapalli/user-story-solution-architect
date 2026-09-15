@@ -10,7 +10,7 @@ and links here.
 - Persona rule (concrete business role) + Workspace Persona Cheatsheet
 - Given / When / Then contract (Pattern A rules + right/wrong examples)
 - AC Pattern Library: Pattern A (behavioural), B (field/object/metadata),
-  C (permission set / FLS), D (field update rules)
+  C (permission set / FLS), D (field update rules), E (record & field specification)
 - "When in doubt" pattern-selection guide
 
 ---
@@ -214,10 +214,108 @@ standalone "update rules" supporting block.
 
 This pattern is preferred over cramming six "And" lines into a single Then.
 
+### Pattern E — Record & Field Specification (post-action record recipe) — MANDATORY when records are created/updated
+
+Use for: any story where a submit, batch run, flow completion, or trigger
+**creates or updates records** and the business team needs to see the *exact
+recipe* — every object, every field, and the exact value (or formula) each field
+is set to. This is the "developer-buildable record spec" the screenshot-style
+requirements demand: one block **per object**, listing **every field** so a
+developer can build the record write without a follow-up meeting and QA can
+assert every field.
+
+**Why this pattern is mandatory:** a Pattern-A AC says *"the Case Manager is
+completed"* in business language, but it does **not** tell the developer that
+`Stage = Complete`, `Status = Approved`, `Decision Date = TODAY`, etc. Whenever
+an AC's outcome is *"records are created/updated"*, you MUST pair it with a
+Pattern E block that enumerates the fields. Never leave the field-level recipe
+implied.
+
+**Structure — one sub-block per object, in creation/update order (parents before children):**
+
+```
+**AC-N — Records created/updated on <trigger> (outcome = <branch>)**
+
+**Given** [precondition / which branch this recipe applies to],
+**When** [the single trigger — Submit / Done / batch run / button click],
+**Then** the following records are created/updated exactly as specified:
+
+**<Object 1 — business label> — [Create | Update]**
+
+| Field | Value | Notes |
+|---|---|---|
+| Record Type | Professional Staff Verification | new / existing |
+| Status | New | |
+| Stage | Professional Staff Verification | |
+| Applied Date | {Current date/time} | |
+| Account | {Practitioner} | lookup |
+| Owner | Professional Staff Verification Queue | round-robin assignment |
+| ... every remaining field ... | ... | ... |
+
+**<Object 2 — business label> — [Create | Update]**
+
+| Field | Value | Notes |
+|---|---|---|
+| ... | ... | ... |
+```
+
+Hard rules for Pattern E:
+
+- **List EVERY field** the record write touches — do not abbreviate with "etc."
+  or "and other fields". If a field is intentionally left unchanged, don't list
+  it; if it is set, it must appear.
+- **One table per object.** Order objects the way they're written (parents
+  before children) so the developer can follow the DML order.
+- **Value column** holds the literal value, a `{merge/source}` placeholder in
+  curly braces (e.g. `{Practitioner}`, `{TODAY}`, `{Termination Date}`), or a
+  short formula. For multi-branch computed fields (Effective To / Active), nest
+  the Pattern D rules inside the Value cell or link to the Pattern D block.
+- Use **business field labels** (e.g. "Re-Cred Due Date", "Decision Date"), not
+  API names — the API-name mapping lives in the Technical Implementation table.
+- If the same trigger produces **different recipes per branch** (e.g. Verification
+  Complete vs. Manager Review vs. Termination), give **each branch its own
+  Pattern E AC** so QA can test each outcome independently.
+- A "Create a Note" instruction is a record write — spec it as its own object
+  block with Note Title and Note Body fields.
+
+**Example — right (screenshot-style, every field enumerated):**
+
+```
+**AC-4 — Records updated on Done (outcome = Verification Complete)**
+
+**Given** a Credentialing Specialist completed the verification with outcome
+"Verification Complete",
+**When** they click Done,
+**Then** the following records are updated exactly as specified:
+
+**Case Manager — Update**
+
+| Field | Value | Notes |
+|---|---|---|
+| Stage | Complete | |
+| Status | Approved | |
+| Decision Date | {TODAY} | |
+| Professional Staff Verification Outcome | Verification Complete | |
+
+**Case — Update**
+
+| Field | Value | Notes |
+|---|---|---|
+| Status | Closed | |
+
+**Note — Create**
+
+| Field | Value | Notes |
+|---|---|---|
+| Title | Professional Staff Verification Complete | |
+| Body | {Note Body} | from the flow |
+```
+
 ### When in doubt
 
-- A field, object, metadata type, or perm set is being **created or changed** -> Pattern B or C (structured bullets).
+- A field, object, metadata type, or perm set is being **created or changed** (its *definition*) -> Pattern B or C (structured bullets).
 - The persona observes **behaviour** of the system -> Pattern A (GWT).
 - A computation has **many conditional branches** that map to a single business outcome -> Pattern D (rules block).
+- A submit / Done / batch / trigger **creates or updates record data** and you need the exact per-field recipe -> Pattern E (record & field specification). **Always pair Pattern E with the Pattern A AC that describes the same action in business language.**
 
-See `references/story-examples.md` for four worked exemplars (Patterns A–D).
+See `references/story-examples.md` for worked exemplars (Patterns A–D).
